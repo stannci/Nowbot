@@ -61,12 +61,7 @@ qnaThreshold: 0.3}
 
                 var cosmosStorage = new azure.AzureBotStorage({ gzipData: false }, docDbClient);
 
-                // Set Custom Store
-                bot.set('storage', botStorage);
-
-                // Enable Conversation Data persistence
-            bot.set('persistConversationData', true);
-
+                
 
 
 
