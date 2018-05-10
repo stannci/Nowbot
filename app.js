@@ -13,31 +13,18 @@ server.listen(process.env.port || process.env.PORT || 3978, function () {
    console.log('%s listening to %s', server.name, server.url); 
 });
 
-// Create chat connector for communicating with the Bot Framework Service
-var connector = new builder.ChatConnector({
-    appId: process.env.MicrosoftAppId,
-    appPassword: process.env.MicrosoftAppPassword
-});
 
 
-
-var connector = new builder.ChatConnector({
-    appId: '9a4b00d6-fcc7-48da-94cf-649b05b855ea',
-    appPassword: 'ksUW806@|)!yfknbETZZZ23' 
+    var connector = new builder.ChatConnector({
+    appId: 'c8928f39-dac0-46e7-831e-0f7b845616ab',
+    appPassword: 'mmvahZL022%*isKXAIU84|(' 
 });
 
 var bot = new builder.UniversalBot(connector) ;
 server.post('/api/messages', connector.listen());
 
 
-// Create chat connector for communicating with the Bot Framework Service
-var appId = "c8928f39-dac0-46e7-831e-0f7b845616ab";
-var appPassword="dukIL144;:!kusnREHPC98^";
-
-
-
-
-            var documentDbOptions = {
+   var documentDbOptions = {
 
            host: 'https://plusninebot.documents.azure.com:443/', 
            masterKey: 'LFq3KuMXGKSfx6bzasFCLGojc9luLrRRXKxXFD6c7uzMDJ8xH9DQdtMUcgoiI00tMLrTLC8A30kTHUZI6ALChw==', 
@@ -818,15 +805,10 @@ var menuItems = {
           item: "signin"
       },
     
-      "Logo": {
-          item: "logo"
+      "Explore": {
+          item: "explore"
       }, 
-        "FAQ": {
-        item: "FAQ"
-    },
-    "SEO": {
-        item: "SEO"
-    },
+       
       "Request Free Consultation call": {
           item: "explore"
       },
