@@ -18,11 +18,18 @@ server.listen(process.env.port || process.env.PORT || 3978, function () {
 
 
 // Create chat connector for communicating with the Bot Framework Service
+var appId = "c8928f39-dac0-46e7-831e-0f7b845616ab";
+var appPassword="dukIL144;:!kusnREHPC98^";
+
 var connector = new builder.ChatConnector({
-    appId: '9a4b00d6-fcc7-48da-94cf-649b05b855ea',
-    appPassword: 'ksUW806@|)!yfknbETZZZ23'
-    
+    appId: appId,
+    appPassword:appPassword
 });
+
+
+
+    server.post('/api/messages', connector.listen());
+
 
 
 
@@ -39,20 +46,7 @@ qnaThreshold: 0.3}
 
 
 
-        var appId = "c8928f39-dac0-46e7-831e-0f7b845616ab";
-        var appPassword="dukIL144;:!kusnREHPC98^";
-
-        var connector = new builder.ChatConnector({
-            appId: appId,
-            appPassword:appPassword
-        });
-
-
-            // Listen for messages from users   
-            storage: new builder.MemoryBotStorage()
-            server.post('/api/messages', connector.listen());
-
-
+       
 
             var documentDbOptions = {
 
