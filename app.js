@@ -1,10 +1,8 @@
-
 var restify = require('restify');
 var builder = require('botbuilder');
 var azure = require('botbuilder-azure'); 
+var cognitiveservices = require('botbuilder-cognitiveservices');
 
-
-var local = true;
 
 
 // Setup Restify Server
@@ -22,12 +20,14 @@ var connector = new builder.ChatConnector({
 });
 
 
-const server = restify.createServer(https_options);
-const bot = new builder.UniversalBot(new builder.ChatConnector({}));
-server.post('/api/messages', bot.connector('*').listen());
-server.listen(process.env.PORT, () => console.log(`${server.name} listening to ${server.url}`));
 
+var connector = new builder.ChatConnector({
+    appId: '9a4b00d6-fcc7-48da-94cf-649b05b855ea',
+    appPassword: 'ksUW806@|)!yfknbETZZZ23' 
+});
 
+var bot = new builder.UniversalBot(connector) ;
+server.post('/api/messages', connector.listen());
 
 
 // Create chat connector for communicating with the Bot Framework Service
@@ -35,20 +35,7 @@ var appId = "c8928f39-dac0-46e7-831e-0f7b845616ab";
 var appPassword="dukIL144;:!kusnREHPC98^";
 
 
-var recognizer = new builder_cognitiveservices.QnAMakerRecognizer({
-    knowledgeBaseId: '38a927e6-693e-430c-9690-ae3e22594788', // process.env.QnAKnowledgebaseId, 
-    subscriptionKey: ' 4e45e350-f5fe-417e-add7-44c083a1722b'}); //process.env.QnASubscriptionKey});
 
-    
-var basicQnAMakerDialog = new builder_cognitiveservices.QnAMakerDialog({
-recognizers: [recognizer],
-defaultMessage: 'No match! Try changing the query terms!',
-qnaThreshold: 0.3}
-);
-
-
-
-       
 
             var documentDbOptions = {
 
@@ -866,11 +853,7 @@ var menuItems = {
     confirmPrompt: "This will cancel your request. Are you sure?"
 });
 
-// Help
-bot.dialog('support', require('./support'))
-.triggerAction({
-  matches: [/help/i, /support/i, /problem/i]
-});
+
 
 // log any bot errors into the console
 bot.on('error', function (e) {
