@@ -39,11 +39,16 @@ qnaThreshold: 0.3}
 
 
 
+        var appId = "c8928f39-dac0-46e7-831e-0f7b845616ab";
+        var appPassword="dukIL144;:!kusnREHPC98^";
+
+        var connector = new builder.ChatConnector({
+            appId: appId,
+            appPassword:appPassword
+        });
 
 
-
-            // Listen for messages from users 
-            var bot = new builder.UniversalBot(connector) ;
+            // Listen for messages from users   
             storage: new builder.MemoryBotStorage()
             server.post('/api/messages', connector.listen());
 
