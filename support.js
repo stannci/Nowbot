@@ -3,7 +3,7 @@ module.exports = function (session) {
     var tickerNumber = Math.ceil(Math.random() * 20000);
 
     // Reply and return to parent dialog
-    session.send('Your message \'%s\' was registered. Once we resolve it; we will get back to you.', session.message.text);
+    session.send('Your message \'%s\' was recieved. If you are stuck just try these commands > "Main Menu" "Cancel" "Start Over" ', session.message.text);
     
     session.send('Thanks for contacting our support team. Your ticket number is %s.', tickerNumber);
 

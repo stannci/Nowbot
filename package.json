@@ -12,15 +12,20 @@
     "azure-cli": "^0.10.17",
     "bluebird": "^3.5.1",
     "botbuilder": "^3.14.1",
+    "botbuilder-azure": "^3.0.4",
     "botbuilder-cognitiveservices": "^1.1.0",
+    "botbuilder-location": "^2.0.0",
     "check-domain": "^1.1.8",
     "domain-available": "0.0.1",
     "dotenv": "^5.0.1",
     "express": "^4.16.3",
+    "http": "0.0.0",
     "node.js": "0.0.0",
     "nodemon": "^1.12.1",
     "npm-git-install": "^0.3.0",
     "restify": "^6.4.0",
+    "server": "^1.0.18",
+    "stripe": "^5.8.0",
     "uuid": "^3.1.0"
   }
 }
