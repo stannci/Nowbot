@@ -1,7 +1,6 @@
 
 var restify = require('restify');
 var builder = require('botbuilder');
-var cognitiveservices = require('C:/Users/hp/Desktop/Chatbot/node_modules/botbuilder-cognitiveservices/lib/botbuilder-cognitiveservices');
 var azure = require('botbuilder-azure'); 
 var builder_cognitiveservices = require("botbuilder-cognitiveservices");
 
