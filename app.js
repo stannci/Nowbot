@@ -81,7 +81,7 @@ qnaThreshold: 0.3}
 
 
                         var bot = bot;
-
+                        var dialog = dialog;
 
 bot.dialog('/', intents);
 
