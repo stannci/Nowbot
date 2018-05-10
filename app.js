@@ -15,21 +15,24 @@ server.listen(process.env.port || process.env.PORT || 3978, function () {
    console.log('%s listening to %s', server.name, server.url); 
 });
 
+// Create chat connector for communicating with the Bot Framework Service
+var connector = new builder.ChatConnector({
+    appId: process.env.MicrosoftAppId,
+    appPassword: process.env.MicrosoftAppPassword
+});
+
+
+const server = restify.createServer(https_options);
+const bot = new builder.UniversalBot(new builder.ChatConnector({}));
+server.post('/api/messages', bot.connector('*').listen());
+server.listen(process.env.PORT, () => console.log(`${server.name} listening to ${server.url}`));
+
+
+
 
 // Create chat connector for communicating with the Bot Framework Service
 var appId = "c8928f39-dac0-46e7-831e-0f7b845616ab";
 var appPassword="dukIL144;:!kusnREHPC98^";
-
-var connector = new builder.ChatConnector({
-    appId: appId,
-    appPassword:appPassword
-});
-
-
-
-    server.post('/api/messages', connector.listen());
-
-
 
 
 var recognizer = new builder_cognitiveservices.QnAMakerRecognizer({
