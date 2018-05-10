@@ -83,7 +83,7 @@ qnaThreshold: 0.3}
                         var bot = bot;
                         var dialog = dialog;
 
-bot.dialog('/', intents);
+
 
 
 
@@ -103,7 +103,7 @@ bot.on('conversationUpdate', function (message) {
     }
 });
 
-
+bot.dialog('/', intents);
 
 
 
@@ -1380,3 +1380,4 @@ bot.dialog('freeCn', [
             });
               
     }
+    bot.dialog('/', intents);
