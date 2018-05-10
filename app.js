@@ -80,10 +80,10 @@ qnaThreshold: 0.3}
                         });
 
 
+                        var bot = bot;
 
 
-                    //root dialog
-                   bot.dialog('/', intents);
+bot.dialog('/', intents);
 
 
 
