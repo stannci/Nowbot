@@ -2,6 +2,8 @@ var restify = require('restify');
 var builder = require('botbuilder');
 var azure = require('botbuilder-azure'); 
 var cognitiveservices = require('botbuilder-cognitiveservices');
+var https = require('https');
+
 
 
 
@@ -55,6 +57,10 @@ server.post('/api/messages', connector.listen());
                         });
 
 
+                   
+                             
+
+
 
  bot.dialog('/', intents);
 
@@ -66,7 +72,7 @@ bot.on('conversationUpdate', function (message) {
                 if (identity.id === message.address.bot.id) {
                 var reply = new builder.Message()
                     .address(message.address)
-                    .text('Hi! Im NowBot, I will be your assitant today!\n\n Here is what I can help you with means you have extra features! such as our Discovery Section! To access just type Disocver.\n\nWebsite Services\nLogo Packages\nDomain checker\nSEO Packages\n\Online Consultation\n\ ')
+                    .text('Hi, Welcome! Im NowBot, I will be your assistant today!\n\n Here is what I can help you with\n\nWebsite Services\nLogo Packages\nDomain checker\nSEO Packages\n\ book Consultation\n\n If you get lost at anytime just say help ')
                     bot.send(reply);
                     }
                 });
@@ -76,12 +82,12 @@ bot.on('conversationUpdate', function (message) {
 
 
 
-//language understanding for general words/phrases that a user may enter such as hi hello morning etc
+//language understanding for general words/phrases that a user may enter such as hi hello morning etc also when bot does not understand a message from user they will be directed back to here
 intents.matches('Repsonse', (session, args, next ) => {
 
 
     //this is the prompt for Facebook/messanger users
-    session.send("Hello! Welcome I'm NowBot I will be your assitant! Heres what I can help you with. Enter your selection to begin\n\nWebsite Services\nLogo Packages\nSEO Packages\nDomain checker\nBlog\nMessanger Consultation\n\nIf you are stuck at anytime just type help or home.")
+    session.send("Hello! Welcome I'm NowBot I will be your assistant! Heres what I can help you with. Type your selection to begin\n\nWebsite Services\nLogo Packages\nSEO Packages\nDomain checker\nConsultation\n\nIf you are stuck at anytime just type help or home.")
     var msg = new builder.Message(session)
     .addAttachment({
         contentUrl: 'http://plusninedesign.com/wp-content/uploads/2018/05/Websites-1.jpg',
@@ -99,12 +105,8 @@ session.send(msg);
 
 
 
-
-
-
-
 intents.matches('GoHome', (session, args, next ) => {
-  session.send("Hey! I noticed your stuck! not to worry , just type any of these options to get out of here.\n\nWebsites\n\n SEO\n\n Logo\n\nBook Consultation\n\nExplore")
+  session.send("Hey! I noticed your stuck! not to worry , just type any of these options to get out of here.\n\nWebsites\n\n SEO\n\n Logo\n\n Book Consultation\n")
 
 });
 
@@ -119,10 +121,15 @@ intents.matches('Domain', (session, args, next ) => {
 
 //language understanding for words/phrases related to a user looking for a website.
     intents.matches('browseWebsites', (session, args, next ) => {
-        session.send("Thnkas for an interest in our seo packages ! Have a look at some of our packages below")
+
+        session.send("Thank you for an interest in our website packages ! Have a look at some of our packages below")
+
         var msg = new builder.Message(session);
+
         msg.attachmentLayout(builder.AttachmentLayout.carousel)
         msg.attachments([
+
+
             new builder.HeroCard(session)
                 .title("One page Website")
                 .subtitle("Start your webiste Journey")
@@ -131,6 +138,8 @@ intents.matches('Domain', (session, args, next ) => {
                 .buttons([
                     builder.CardAction.imBack(session, "buy one page Website", "Buy Wesbite")
                 ]),
+
+
             new builder.HeroCard(session)
                 .title("Wordpress Website")
                 .subtitle("Content managament Website")
@@ -139,6 +148,8 @@ intents.matches('Domain', (session, args, next ) => {
                 .buttons([
                     builder.CardAction.imBack(session, "buy Wordpress Website", "Buy Website")
                 ]),
+
+
                 new builder.HeroCard(session)
                 .title("E-commerce Website")
                 .subtitle("Sell your products online")
@@ -147,6 +158,8 @@ intents.matches('Domain', (session, args, next ) => {
                 .buttons([
                     builder.CardAction.imBack(session, "buy E-commerce Website", "Buy Website")
                 ]),
+
+
                 new builder.HeroCard(session)
                 .title("Custom Website")
                 .subtitle("Totally customized website to suit your needs")
@@ -165,13 +178,14 @@ intents.matches('Domain', (session, args, next ) => {
         
 // Add dialog to handle 'Buy' button click
 bot.dialog('buyButtonWebsites', [
+
     function (session, args, next) {
-        // Get color and optional size from users utterance
+
         var utterance = args.intent.matched[0];
+
         var color = /(one page|Wordpress|E-commerce|Custom)/i.exec(utterance);
         var size = /\b(Business|Blogger|Entrepreneur|Start up)\b/i.exec(utterance);
         if (color) {
-            // Initialize cart item
             var item = session.dialogData.item = { 
                 product: "Website"  + color[0].toLowerCase() +  " Package",
                 size: size ? size[0].toLowerCase() : null,
@@ -179,46 +193,56 @@ bot.dialog('buyButtonWebsites', [
                 qty: 1
             };
             if (!item.size) {
-                // Prompt for size
                 builder.Prompts.choice(session, "Please choose what matches you most?", "Business|Blogger|Entrepreneur|Start up");
             } else {
-                //Skip to next waterfall step
                 next();
             }
         } else {
-            // Invalid product
             session.send("I'm sorry... That product wasn't found.").endDialog();
         }   
     },
     function (session, results) {
-        // Save size if prompted
+
         var item = session.dialogData.item;
+
         if (results.response) {
+
             item.size = results.response.entity.toLowerCase();
         }
-
-        // Add to cart
         if (!session.userData.cart) {
+
             session.userData.cart = [];
+
+
         }
+
         session.userData.cart.push(item);
 
-        // Send confirmation to users
-        session.send("Your almost there!A '%(size)s %(product)s is a great choice!' Please fill out the questions below in relation to your Logo", item) ,
+      
+        session.send("Your almost there!A '%(product)s is a great choice!' Please fill out the questions below in relation to your website", item) ,
       
     session.send("Thank you for your interest in purchasing a website from us! Please answer these questions and we will be in touch");
+
                        builder.Prompts.time(session, "What date do you need your want your website for?");
                    },
                    function (session, results) {
+
                        session.dialogData.conDate = builder.EntityRecognizer.resolveTime([results.response]);
+
                        builder.Prompts.text(session, "What is your email address");
+
                        var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                      
                        email = session.message.text;
                        if (re.test(email)) {
+
                            session.userData.email = email;
+
                            session.send("Thank you, " + session.userData.email + "email is ok");
+
                        } else {
-                           session.send("Please type a valid email address. For example: test@hotmail.com");
+
+                           session.send("Please type a valid email address. For example: hi@live.com");
                        }
                    
                    },
@@ -229,8 +253,8 @@ bot.dialog('buyButtonWebsites', [
                    function (session, results) {
                        session.dialogData.conName = results.response;
                
-                       // Process request and display reservation details
-                       session.send(`Website confirmed. We will contact you via email to discuss further! The details: <br/>Date/Time: ${session.dialogData.conDate} <br/> Interest: ${session.dialogData.Size} <br/>name: ${session.dialogData.conName}`);
+     
+                       session.send(`Website confirmed. We will contact you via email to discuss further! The details: <br/>Date/Time: ${session.dialogData.conDate} <br/> Email: ${session.dialogData.Size} <br/>name: ${session.dialogData.conName}`);
                        session.endDialog();
                    }
     
@@ -243,9 +267,9 @@ bot.dialog('buyButtonWebsites', [
 
 
 
-//language understanding to understand for blog, podcast , videos, explore area
+//LUIS language understanding
 intents.matches('Learn', (session, args, next ) => {
-    session.send("Hey, If you want to go to our blog just type Blog!")
+    session.send("Hey, If you want to go to home just type Home")
     
     });
 
@@ -257,26 +281,25 @@ intents.matches('BookConsultation', (session, args, next ) => {
 
 });
 
-intents.matches('OnlineUsers', (session, args, next ) => {
-    session.send("I can help you here! To book a consultation just type book consultation");
-    
-
-});
 
 
-
-   
 /*
+   
+
 intents.matches('OnlineUsers', (session, args, next ) => {
+
     var savedAddress = session.message.address;
+
     session.send("Perfect, Please Fill out the form below to book your free sonsultation!");
+
     if (session.message && session.message.value) {
-        // A Card's Submit Action obj was received
+        
+
         processSubmitAction(session, session.message.value);
         return;
     }
-/*
-    /*
+
+    
     // Display adaptive card to help user get in touch with designer
     var card = {
         'contentType': 'application/vnd.microsoft.card.adaptive',
@@ -352,6 +375,7 @@ intents.matches('OnlineUsers', (session, args, next ) => {
                             },
                             {
                                 'type': 'TextBlock',
+                                vvv
                                 'text': 'Choose a date'
                             },
                             {
@@ -403,16 +427,17 @@ intents.matches('OnlineUsers', (session, args, next ) => {
 session.send(msg);
 })
    
+
+
 */
-
-
-
 
 intents.matches('BrowseLogos', (session, args, next ) => {
     session.send("Thanks for an interest in our logos!")
     var msg = new builder.Message(session);
-    msg.attachmentLayout(builder.AttachmentLayout.carousel)
+    msg.attachmentLayout(builder.AttachmentLayout.carousel) 
     msg.attachments([
+
+
         new builder.HeroCard(session)
             .title("Silver Logo Package")
             .subtitle("A logo to make your brand instantly regognisible")
@@ -421,6 +446,8 @@ intents.matches('BrowseLogos', (session, args, next ) => {
             .buttons([
                 builder.CardAction.imBack(session, "buy silver logo", "Buy")
             ]),
+
+
         new builder.HeroCard(session)
             .title("Gold Logo Package")
             .subtitle("100% design from sketch.")
@@ -436,6 +463,7 @@ intents.matches('BrowseLogos', (session, args, next ) => {
     
     
     session.send(msg).endDialog();
+
 }).triggerAction({ matches: /^(show|list)/i });
 
 
@@ -448,10 +476,16 @@ intents.matches('BrowseLogos', (session, args, next ) => {
     
 
 intents.matches('browseSEO', (session, args, next ) => {
+
     session.send("Thnkas for an interest in our seo packages ! Have a look at some of our packages below")
     var msg = new builder.Message(session);
+
     msg.attachmentLayout(builder.AttachmentLayout.carousel)
+
     msg.attachments([
+
+
+
         new builder.HeroCard(session)
             .title("SEO Bronze Package")
             .subtitle("Start your SEO Journey")
@@ -460,6 +494,7 @@ intents.matches('browseSEO', (session, args, next ) => {
             .buttons([
                 builder.CardAction.imBack(session, "buy bronze SEO", "Buy SEO")
             ]),
+
         new builder.HeroCard(session)
             .title("Silver SEO Package")
             .subtitle("Get to the #1 page on Google")
@@ -468,6 +503,8 @@ intents.matches('browseSEO', (session, args, next ) => {
             .buttons([
                 builder.CardAction.imBack(session, "buy silver SEO", "Buy SEO")
             ]),
+
+
             new builder.HeroCard(session)
             .title("Gold SEO Package")
             .subtitle("Top 3 on #1 page of Goole")
@@ -476,6 +513,9 @@ intents.matches('browseSEO', (session, args, next ) => {
             .buttons([
                 builder.CardAction.imBack(session, "buy gold SEO", "Buy SEO")
             ]),
+
+
+
             new builder.HeroCard(session)
             .title("Platinum SEO Package")
             .subtitle("100% #1 spot on first page of Google")
@@ -483,8 +523,15 @@ intents.matches('browseSEO', (session, args, next ) => {
             .images([builder.CardImage.create(session, 'http://www.designvamp.com/wp-content/uploads/2015/07/Platinum-Package-Graphics-Design.png.pagespeed.ce.AuPHwKiMkO.png')])
             .buttons([
                 builder.CardAction.imBack(session, "buy platinum SEO", "Buy SEO")
-            ])
-    ]);
+          
+          
+                          ])
+
+
+                
+                        ]);
+
+
     session.send(msg).endDialog();
 
 
@@ -493,15 +540,17 @@ intents.matches('browseSEO', (session, args, next ) => {
 
 
 
-// Add dialog to handle 'Buy' button click
+
 bot.dialog('buyButtonSEO', [
     function (session, args, next) {
-        // Get color and optional size from users utterance
+     
         var utterance = args.intent.matched[0];
+
         var color = /(bronze|silver|gold|platinum)/i.exec(utterance);
+
         var size = /\b(1 month|3 months|6 months|12 months)\b/i.exec(utterance);
         if (color) {
-            // Initialize cart item
+            
             var item = session.dialogData.item = { 
                 product: "SEO"  + color[0].toLowerCase() +  " Package",
                 size: size ? size[0].toLowerCase() : null,
@@ -509,34 +558,36 @@ bot.dialog('buyButtonSEO', [
                 qty: 1
             };
             if (!item.size) {
-                // Prompt for size
+                
                 builder.Prompts.choice(session, "Select the time of contract?", "1 month|3 months|6 months|12 months");
             } else {
-                //Skip to next waterfall step
+              
                 next();
             }
         } else {
-            // Invalid product
+            
             session.send("I'm sorry... That product wasn't found.").endDialog();
         }   
     },
     function (session, results) {
-        // Save size if prompted
+    
+        
         var item = session.dialogData.item;
         if (results.response) {
+
             item.size = results.response.entity.toLowerCase();
         }
 
-        // Add to cart
         if (!session.userData.cart) {
             session.userData.cart = [];
         }
         session.userData.cart.push(item);
 
-        // Send confirmation to users
-        session.send("Your almost there!A '%(size)s %(product)s is a great choice!' Please fill out the questions below in relation to your Logo", item) ,
+    
+        session.send("Your almost there!A '%(size)s %(product)s is a great choice!' Please fill out the questions below in relation to your SEO", item) ,
       
     session.send("Thank you for your interest in purchasing SEO from us , please answer these questions and we will be in touch");
+
                        builder.Prompts.time(session, "When do you want to start work?");
                    },
                    function (session, results) {
@@ -548,18 +599,19 @@ bot.dialog('buyButtonSEO', [
                            session.userData.email = email;
                            
                        } else {
-                           session.send("Please type a valid email address. For example: test@hotmail.com");
+                           session.send("Please type a valid email address. For example: hi@live.com");
                        }
                    
                    },
                    function (session, results) {
                        session.dialogData.Size = results.response;
+
                        builder.Prompts.text(session, "what is your full name??");
                    },
                    function (session, results) {
                        session.dialogData.conName = results.response;
                
-                       // Process request and display reservation details
+                 
                        session.send(`SEO Package confirmed. We will contact you via email to discuss further! The details: <br/>Date/Time: ${session.dialogData.conDate} <br/> Interest: ${session.dialogData.Size} <br/>name: ${session.dialogData.conName} `);
                        
                                }
@@ -570,7 +622,6 @@ bot.dialog('buyButtonSEO', [
 ]).triggerAction({ matches: /(buy|add)\s.*SEO/i });
 
 
-// Main menu
 var menuItems2 = { 
     
     "Discover now": {
@@ -584,8 +635,6 @@ var menuItems2 = {
 }
 
 
-
-// Display the main menu and start a new request depending on user input.
 bot.dialog("DiscoverMenu", [
   function(session){
       builder.Prompts.choice(session, "Welcome to our Discovery Section: To exit just type discover again at any time\n\n ", menuItems2);
@@ -598,16 +647,13 @@ bot.dialog("DiscoverMenu", [
   }
 ])
 .triggerAction({
-  // The user can request this at any time.
-  // Once triggered, it clears the stack and prompts the main menu again.
+
   matches: /^discover$/i,
   confirmPrompt: "This will cancel your request. Are you sure?"
 });
 
 
-
-
-// Main menu
+//This is the Main menu
 var menuItems = { 
      
     "website": {
@@ -648,7 +694,6 @@ var menuItems = {
  
 
 
-  // Display the main menu and start a new request depending on user input.
   bot.dialog("mainMenu", [
     function(session){
         builder.Prompts.choice(session, "This is our Main Menu: type what you are looking for! ", menuItems);
@@ -660,13 +705,11 @@ var menuItems = {
     }
 ])
 .triggerAction({
-    // The user can request this at any time.
-    // Once triggered, it clears the stack and prompts the main menu again.
+    
+
     matches: /^main menu$|^Main Menu$|^Home$|home$/i,
     confirmPrompt: "This will cancel your request. Are you sure?"
 });
-
-
 
 
 
@@ -683,32 +726,33 @@ function (session) {
 },
 function (session, results) {
 
-    // create the card based on selection
+
     var selectedCardName = results.response.entity;
     var card = createCard(selectedCardName, session);
 
-    // attach the card to the reply message
+  
     var msg = new builder.Message(session).addAttachment(card);
     session.send(msg);
 }
 ])
 .triggerAction({
-// The user can request this at any time.
-// Once triggered, it clears the stack and prompts the main menu again.
+
 matches: /^blog$/i,
+
 confirmPrompt: "This will cancel your request. Are you sure?"
 });
 
 
 
-var HeroCardName = 'Our Blog';
+
+var HeroCardName3 = 'Our Blog';
 var ThumbnailCardName = 'Portfolio';
 
-var CardNames3 = [ThumbnailCardName,HeroCardName];
+var CardNames3 = [ThumbnailCardName,HeroCardName3];
 
              function createCard(selectedCardName, session) {
                 switch (selectedCardName) {
-               case HeroCardName:
+               case HeroCardName3:
             return createHeroCard(session);
            case ThumbnailCardName:
             return createThumbnailCard(session);
@@ -718,6 +762,7 @@ var CardNames3 = [ThumbnailCardName,HeroCardName];
 
 
 function createThumbnailCard(session) {
+
     return new builder.ThumbnailCard(session)
         .title('Our Portfolio')
         .subtitle('Some of our work')
@@ -737,7 +782,9 @@ function createThumbnailCard(session) {
 } 
 
 function createHeroCard(session) {
+
     return new builder.HeroCard(session)
+
         .title('Blog Post number 1')
         .subtitle('5 benefits of a website for your business')
         .text('Having a website is crucial to your businesses success. It is the growth that many businesses need, it can bring that increase in sales and that exposure that you have being looking for. Your market goes from local to worldwide. Read on and discover exactly how a website can be beneficial for you.')
@@ -757,10 +804,17 @@ function createHeroCard(session) {
 
 
 bot.dialog('buywebsitehome', function (session) {
-    session.send("Thnkas for an interest in our website packages ! Have a look at some of our packages below")
+
+    session.send("Thank you for an interest in our website packages ! Have a look at some of our packages below")
+
     var msg = new builder.Message(session);
+
     msg.attachmentLayout(builder.AttachmentLayout.carousel)
+
     msg.attachments([
+
+
+
         new builder.HeroCard(session)
             .title("One page Website")
             .subtitle("Start your webiste Journey")
@@ -769,14 +823,20 @@ bot.dialog('buywebsitehome', function (session) {
             .buttons([
                 builder.CardAction.imBack(session, "buy one page Website", "Buy Wesbite")
             ]),
+
+
+
         new builder.HeroCard(session)
             .title("Wordpress Website")
             .subtitle("Content managament Website")
             .text("Price is €549 once off")
             .images([builder.CardImage.create(session, 'https://images.unsplash.com/photo-1519211975560-4ca611f5a72a?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=6ae34625b8db390fb2b784800d76d225&auto=format&fit=crop&w=1350&q=80')])
             .buttons([
+
                 builder.CardAction.imBack(session, "buy Wordpress Website", "Buy Website")
             ]),
+
+
             new builder.HeroCard(session)
             .title("E-commerce Website")
             .subtitle("Sell your products online")
@@ -785,6 +845,7 @@ bot.dialog('buywebsitehome', function (session) {
             .buttons([
                 builder.CardAction.imBack(session, "buy E-commerce Website", "Buy Website")
             ]),
+
             new builder.HeroCard(session)
             .title("Custom Website")
             .subtitle("Totally customized website to suit your needs")
@@ -793,7 +854,11 @@ bot.dialog('buywebsitehome', function (session) {
             .buttons([
                 builder.CardAction.imBack(session, "buy Custom Website", "Buy Website")
             ])
+
     ]);
+
+
+
     session.send(msg).endDialog();
 
 
@@ -804,71 +869,103 @@ bot.dialog('buywebsitehome', function (session) {
 // Add dialog to handle 'Buy' button click
 bot.dialog('buywebsitehomebtn', [
 function (session, args, next) {
-    // Get color and optional size from users utterance
+
     var utterance = args.intent.matched[0];
+
     var color = /(one page|Wordpress|E-commerce|Custom)/i.exec(utterance);
-    var size = /\b(Business|Blogger|Entrepreneur|Start up)\b/i.exec(utterance);
+
+    var cat = /\b(Business|Blogger|Entrepreneur|Start up)\b/i.exec(utterance);
+
     if (color) {
-        // Initialize cart item
+  
         var item = session.dialogData.item = { 
+
             product: "Website"  + color[0].toLowerCase() +  " Package",
-            size: size ? size[0].toLowerCase() : null,
+
+            cat: cat ? cat[0].toLowerCase() : null,
             
             qty: 1
         };
         if (!item.size) {
-            // Prompt for size
+           
+            
             builder.Prompts.choice(session, "Please choose what matches you most?", "Business|Blogger|Entrepreneur|Start up");
+
+
         } else {
-            //Skip to next waterfall step
+            
             next();
         }
     } else {
-        // Invalid product
+
+        
         session.send("I'm sorry... That product wasn't found.").endDialog();
+
+
     }   
 },
 function (session, results) {
-    // Save size if prompted
+    
     var item = session.dialogData.item;
+
     if (results.response) {
+
+
         item.size = results.response.entity.toLowerCase();
     }
 
-    // Add to cart
+ 
     if (!session.userData.cart) {
+
         session.userData.cart = [];
     }
     session.userData.cart.push(item);
 
     // Send confirmation to users
-    session.send("Your almost there!A '%(size)s %(product)s is a great choice!' Please fill out the questions below in relation to your Logo", item) ,
+    session.send("Your almost there!A '%(size)s %(product)s is a great choice!' Please fill out the questions below in relation to your Website", item) ,
   
 session.send("Thank you for your interest in purchasing a website from us! Please answer these questions and we will be in touch");
+
+
                    builder.Prompts.time(session, "What date do you need your want your website for?");
                },
                function (session, results) {
+
                    session.dialogData.conDate = builder.EntityRecognizer.resolveTime([results.response]);
+
                    builder.Prompts.text(session, "What is your email address");
                    var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
                    email = session.message.text;
                    if (re.test(email)) {
                        session.userData.email = email;
+
+
                        session.send("Thank you, " + session.userData.email + "email is ok");
+
+
                    } else {
+
+
                        session.send("Please type a valid email address. For example: test@hotmail.com");
                    }
                
                },
                function (session, results) {
+
                    session.dialogData.Size = results.response;
+
                    builder.Prompts.text(session, "what is your full name??");
                },
+
+
                function (session, results) {
+
+
                    session.dialogData.conName = results.response;
            
-                   // Process request and display reservation details
+           
                    session.send(`Website confirmed. We will contact you via email to discuss further! The details: <br/>Date/Time: ${session.dialogData.conDate} <br/> Interest: ${session.dialogData.Size} <br/>name: ${session.dialogData.conName}`);
+                  
                    session.endDialog();
                }
 
@@ -876,13 +973,6 @@ session.send("Thank you for your interest in purchasing a website from us! Pleas
 
 
 ]).triggerAction({ matches: /(buy|add)\s.*Website/i });
-
-
-
-
-
-
-
 
 
 
@@ -905,7 +995,7 @@ var menuItems3= {
 // Display the main menu and start a new request depending on user input.
 bot.dialog("domainMenu", [
   function(session){
-      builder.Prompts.choice(session, "Domain checker men", menuItems3);
+      builder.Prompts.choice(session, "Domain checker menu", menuItems3);
       
   },
   function(session, results){
@@ -932,11 +1022,11 @@ function (session) {
 },
 function (session, results) {
 
-    // create the card based on selection
+ 
     var selectedCardName = results.response.entity;
     var card = createCard(selectedCardName, session);
 
-    // attach the card to the reply message
+  
     var msg = new builder.Message(session).addAttachment(card);
     session.send(msg);
 }
@@ -976,50 +1066,6 @@ var CardNames5 = [HeroCardNameD,];
 
 
 
-bot.dialog('signin', [
-    
-
-    
-            function (session) {
-                builder.Prompts.choice(session, 'Choose Sign in', CardNames1, {
-                maxRetries: 3,
-                retryPrompt: 'Ooops, what you wrote is not a valid option, please try again'
-                           });
-                    },
-                        function (session, results) {
-
-                  // create the card based on selection
-                       var selectedCardName = results.response.entity;
-                      var card = createCard(selectedCardName, session);
-
-                      // attach the card to the reply message
-                      var msg = new builder.Message(session).addAttachment(card);
-                       session.send(msg);
-                    }
-            ]       )
-
-
-               var SigninCardName = 'Sign-in card';
-               var CardNames1 = [ SigninCardName,];
-
-
-                          function createCard(selectedCardName, session) {
-                          switch (selectedCardName) {
-    
-                   case SigninCardName:
-                    return createSigninCard(session);
-    
-               }
-        }
-
-function createSigninCard(session) {
-return new builder.SigninCard(session)
-    .text('BotFramework Sign-in Card')
-    .button('Sign-in', 'https://login.microsoftonline.com');
-}
-
-
-  
   // Display the main menu and start a new request depending on user input.
   bot.dialog("websiteMenu", [
       function(session){
@@ -1032,14 +1078,13 @@ return new builder.SigninCard(session)
       }
   ])
   .triggerAction({
-      // The user can request this at any time.
-      // Once triggered, it clears the stack and prompts the main menu again.
+ 
       matches: /^website menu $/i,
       confirmPrompt: "This will cancel your request. Are you sure?"
   });
 
 
-// log any bot errors into the console
+
 bot.on('error', function (e) {
 console.log('And error ocurred', e);
 });
@@ -1047,8 +1092,8 @@ console.log('And error ocurred', e);
 
  
   
-//oder website
 
+//website functionality
 bot.dialog('orderWebsite', [
       function(session){
           session.send("Lets build you a website!");
@@ -1056,13 +1101,13 @@ bot.dialog('orderWebsite', [
       },
       function (session, results) {
           if (results.response) {
-              // Display itemize order with price total.
+
               for(var i = 1; i < session.conversationData.orders.length; i++){
                   session.send(`You ordered: ${session.conversationData.orders[i].Description} for a total of $${session.conversationData.orders[i].Price}.`);
               }
               session.send(`Your total is: $${session.conversationData.orders[0].Price}`);
   
-              // Continue with the check out process.
+            
               builder.Prompts.text(session, "What is your email address");
               var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
               email = session.message.text;
@@ -1085,7 +1130,7 @@ bot.dialog('orderWebsite', [
       }
   ])
 
-  //...attached triggers...
+
   
   
             .reloadAction(
@@ -1130,21 +1175,20 @@ bot.dialog('orderWebsite', [
               
               "Check out": {
                   Description: "Check out",
-                  Price: 0// Order total. Updated as items are added to order.
+                  Price: 0
               }
               
             
         }; 
 
-        // Add services until the user decides to checkout. 
+
 bot.dialog("addItem", [
       function(session, args){
           if(args && args.reprompt){
               session.send("is there anymore services you require?");
           }
           else{
-              // New order
-              // Using the conversationData to store the orders
+
               session.conversationData.orders = new Array();
               session.conversationData.orders.push({ 
                   Description: "Check out",
@@ -1160,11 +1204,11 @@ bot.dialog("addItem", [
               }
               else {
                   var order = websiteMenu[results.response.entity];
-                  session.conversationData.orders[0].Price += order.Price; // Add to total.
+                  session.conversationData.orders[0].Price += order.Price; 
                   var msg = `You ordered: ${order.Description} for a total of €${order.Price}.`;
                   session.send(msg);
                   session.conversationData.orders.push(order);
-                  session.replaceDialog("addItem", { reprompt: true }); // Repeat dinner menu
+                  session.replaceDialog("addItem", { reprompt: true }); 
               }
           }
       }
@@ -1182,7 +1226,7 @@ bot.dialog("addItem", [
 
 
 
-// log any bot errors into the console
+
 bot.on('error', function (e) {
     console.log('And error ocurred', e);
 });
@@ -1220,41 +1264,37 @@ bot.dialog('logo', function (session) {
 
 
 
-// Add dialog to handle 'Buy' button click
+
 bot.dialog('buyButtonClick', [
     function (session, args, next) {
-        // Get color and optional size from users utterance
+
         var utterance = args.intent.matched[0];
         var color = /(silver|gold)/i.exec(utterance);
-        var size = /\b( Entrepreneur|Start Up|Blogger|Business)\b/i.exec(utterance);
+        var cat = /\b( Entrepreneur|Start Up|Blogger|Business)\b/i.exec(utterance);
         if (color) {
-            // Initialize cart item
+            
             var item = session.dialogData.item = { 
                 product: "Logo"  + color[0].toLowerCase() +  " Package",
                 size: size ? size[0].toLowerCase() : null,
-                
+            
                 qty: 1
             };
             if (!item.size) {
-                // Prompt for size
+           
                 builder.Prompts.choice(session, "What matches you most?", "Business|Blogger|Start Up|Entrepreneur");
             } else {
-                //Skip to next waterfall step
                 next();
             }
         } else {
-            // Invalid product
+
             session.send("I'm sorry... That product wasn't found.").endDialog();
         }   
     },
     function (session, results) {
-        // Save size if prompted
         var item = session.dialogData.item;
         if (results.response) {
             item.size = results.response.entity.toLowerCase();
         }
-
-        // Add to cart
         if (!session.userData.cart) {
             session.userData.cart = [];
         }
@@ -1269,7 +1309,7 @@ bot.dialog('buyButtonClick', [
                    function (session, results) {
                        session.dialogData.conDate = builder.EntityRecognizer.resolveTime([results.response]);
                        builder.Prompts.text(session, "What is your email address");
-                       var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                       var re = /^(([^@]+(\.[^@"]+)*)||(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
                        email = session.message.text;
                        if (re.test(email)) {
                            session.userData.email = email;
@@ -1286,7 +1326,7 @@ bot.dialog('buyButtonClick', [
                    function (session, results) {
                        session.dialogData.conName = results.response;
                
-                       // Process request and display reservation details
+                       
                        session.send(`Logo confirmed. We will contact you via email to discuss further! The details: <br/>Date/Time: ${session.dialogData.conDate} <br/> Interest: ${session.dialogData.Size} <br/>name: ${session.dialogData.conName}`);
                        session.endDialog();
                    }
@@ -1301,7 +1341,7 @@ bot.dialog('buyButtonClick', [
 var menuItems7 = { 
     
     "Book Consultation": {
-        item: "Consultation"
+        item: "ConsultationBooking2"
     },
     "Home": {
         item: "mainMenu"
@@ -1311,14 +1351,14 @@ var menuItems7 = {
 }
 
 // Display the main menu and start a new request depending on user input.
-bot.dialog("ConsultationBook", [
+bot.dialog("ConsultationBooking1", [
     function(session){
         builder.Prompts.choice(session, "Welcome to our Consultation booking Section: To exit just type book sonsultation again at any time\n\n ", menuItems7);
         
     },
     function(session, results){
         if(results.response){
-            session.beginDialog(menuItems2[results.response.entity].item);
+            session.beginDialog(menuItems7[results.response.entity].item);
         }
     }
   ])
@@ -1334,32 +1374,45 @@ bot.dialog("ConsultationBook", [
 //Free Consultation
 
 
-bot.dialog('Consultation', [
+bot.dialog('ConsultationBooking2', [
     function(session){
    
-    
-              session.send("Welcome! thank you for the interest in booking a consulation call! please fill out the form below and we will contact you on your desired date and time. We look forward to talking to you.");
-              builder.Prompts.time(session, "Please provide a consultation date and time (e.g.: June 6th at 5pm)");
-          },
-          function (session, results) {
-              session.dialogData.conDate = builder.EntityRecognizer.resolveTime([results.response]);
-              builder.Prompts.choice(session, "What are you interested in?", ["websites","logo","SEO", "Branding"]);
-          },
-          function (session, results) {
-              session.dialogData.Size = results.response;
-              builder.Prompts.text(session, "what is your full name??");
-          },
-          function (session, results) {
-            session.dialogData.conName = results.response;
-            builder.Prompts.number(session, "what is your Phone Number?");
-        },
-          function (session, results) {
-              session.dialogData.conNumber = results.response;
-      
-              // Process request and display reservation details
-              session.send(`Consultation confirmed. The details:<br/>Number ${session.dialogData.conNumber}<br/>Date/Time: ${session.dialogData.conDate}  <br/>name: ${session.dialogData.conName}`);
-              session.endDialog();
-          }
+        session.send("Thank you for your interest in gettin a consultation booked, please leave your details below and we will be in touch!");
+        
+                               builder.Prompts.time(session, "What date do you want to book in for ?");
+                           },
+                           function (session, results) {
+        
+                               session.dialogData.conDate = builder.EntityRecognizer.resolveTime([results.response]);
+        
+                               builder.Prompts.text(session, "What is your email address");
+        
+                               var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                              
+                               email = session.message.text;
+                               if (re.test(email)) {
+        
+                                   session.userData.email = email;
+        
+                                   session.send("Thank you, " + session.userData.email + "email is ok");
+        
+                               } else {
+        
+                                   session.send("Please type a valid email address. For example: hi@live.com");
+                               }
+                           
+                           },
+                           function (session, results) {
+                               session.dialogData.Size = results.response;
+                               builder.Prompts.text(session, "what is your full name??");
+                           },
+                           function (session, results) {
+                               session.dialogData.conName = results.response;
+                       
+             
+                               session.send(`Booking confirmed. We will contact you via email to discuss further! The details: <br/>Date/Time: ${session.dialogData.conDate} <br/> Email: ${session.dialogData.Size} <br/>name: ${session.dialogData.conName}`);
+                               session.endDialog();
+                           }
 
           
       ])
@@ -1382,12 +1435,8 @@ bot.dialog('Consultation', [
             });
         },
         function (session, results) {
-    
-            // create the card based on selection
-            var selectedCardName = results.response.entity;
+              var selectedCardName = results.response.entity;
             var card = createCard(selectedCardName, session);
-    
-            // attach the card to the reply message
             var msg = new builder.Message(session).addAttachment(card);
             session.send(msg);
         }
@@ -1399,11 +1448,10 @@ bot.dialog('Consultation', [
     var HeroCardName = "Domain Checker";
     var ThumbnailCardName = 'Portfolio';
     var ReceiptCardName = 'Receipt card';
-    var SigninCardName = 'Sign-in card';
     var AnimationCardName = "Animation card";
     var VideoCardName = "Videos";
     var AudioCardName = "Podcasts";
-    var CardNames = [HeroCardName,ThumbnailCardName, VideoCardName, AudioCardName,SigninCardName];
+    var CardNames = [HeroCardName,ThumbnailCardName, VideoCardName, AudioCardName];
     
                  function createCard(selectedCardName, session) {
                     switch (selectedCardName) {
@@ -1413,8 +1461,6 @@ bot.dialog('Consultation', [
                          return createThumbnailCard(session);
                          case ReceiptCardName:
                        return createReceiptCard(session);
-                      case SigninCardName:
-                        return createSigninCard(session);
                         case AnimationCardName:
                     return createAnimationCard(session);
                        case VideoCardName:
@@ -1426,11 +1472,7 @@ bot.dialog('Consultation', [
                 
         }
     }
-    function createSigninCard(session) {
-        return new builder.SigninCard(session)
-            .text('Sign In Via facebook')
-            .button('Sign-in', 'https://en-gb.facebook.com/login');
-        }
+    
 
         function createHeroCard(session) {
             return new builder.HeroCard(session)
@@ -1513,7 +1555,13 @@ bot.dialog('Consultation', [
               
     }
 
-    
+    /*
+
+
+References - https://docs.botframework.com/en-us/node/builder/chat-reference/modules/_botbuilder_d_.html
+
+
+    */
    
 
 
